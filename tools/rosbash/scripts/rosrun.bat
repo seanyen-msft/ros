@@ -59,19 +59,25 @@ if "%catkin_package_libexec_dirs%" == "" (
   )
 )
 
+REM Assume that the command is an executable if it has no extension
+set expandedexe=%2
+if "%~x2" == "" (
+  set expandedexe=%2.exe
+)
+
 set wildchar=%2:~-1%
 if NOT "%wildchar%" == "*" (
-  call :debug "Searching for %2.exe"
+  call :debug "Searching for %expandedexe%"
   REM on Windows, we will have a pecking order, libexec, pkgdir, global bin dir
   set nexes=0
   if NOT "%catkin_package_libexec_dirs%" == "" (
     for %%g in (%catkin_package_libexec_dirs%) do (
-      call :findexe %2.exe %%g
+      call :findexe %expandedexe% %%g
     )
   )
-  call :findexe %2.exe %pkgdir%
+  call :findexe %expandedexe% %pkgdir%
   for /f "delims=" %%a in ('catkin_find --bin') do set "catbin=%%a"
-  call :findexe %2.exe !catbin!
+  call :findexe %expandedexe% !catbin!
 
   REM Select the first exe in the list
   if !nexes! EQU 0 (
@@ -92,6 +98,11 @@ if NOT "%wildchar%" == "*" (
     exit /b 3
   )
   set exepath=%absname%
+)
+
+REM Python scripts need to have the python executable as the command argument
+if "%~x2" == ".py" (
+  if "%rosrun_prefix%" == "" ( set rosrun_prefix=python ) else ( set rosrun_prefix=%rosrun_prefix% python )
 )
 
 set exeargs=
