@@ -260,8 +260,6 @@ class Printer:
                 pass
             except IOError:
                 pass
-            except ImportError:
-                pass
             if width <= 0:
                 try:
                     width = int(os.environ['COLUMNS'])
