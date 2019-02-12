@@ -519,6 +519,7 @@ def find_resource(pkg, resource_name, filter_fn=None, rospack=None):
     # Uniquify the results, in case we found the same file twice, while keeping order
     unique_matches = []
     for match in matches:
-        if match not in unique_matches:
-            unique_matches.append(match)
+        norm_match = os.path.normcase(os.path.normpath(match))
+        if norm_match not in unique_matches:
+            unique_matches.append(norm_match)
     return unique_matches
